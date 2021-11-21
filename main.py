@@ -115,9 +115,10 @@ def do_crawling(url):
 
 from concurrent.futures import ThreadPoolExecutor
 
-page = 17791774
+#11/21 오후 06:55기준
+page = 17810530
 
-while page >17790000:
+while page >17810500:
   page=str(page)
   url = f"http://movie.naver.com/movie/point/af/list.naver?st=nickname&sword={page}&target=after"
 
