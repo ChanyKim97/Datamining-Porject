@@ -34,7 +34,6 @@ def genre_list(url):
         res = requests.get(url)
         content = res.text
         soup = BeautifulSoup(content, 'html.parser')
-
         #table tag info_area class가진 부분
         info = soup.find_all('table', 'info_area')
 
