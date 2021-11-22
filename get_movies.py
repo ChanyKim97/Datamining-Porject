@@ -1,6 +1,5 @@
 # 1. DB 에서 가져온 영화 리스트를 set화
 # 2. 영화마다 출연한 배우들 받아옴
-# 3. TF-IDF 조짐
 
 import pymysql
 from bs4 import BeautifulSoup
@@ -51,16 +50,16 @@ for i in range(len(result)):
 # 리스트 to 집합으로 중복값 제거
 code_list = set(code_list)
 
-for cd in code_list:
-    url = f"https://movie.naver.com/movie/bi/mi/detail.naver?code={cd}"
-    actors = get_actors(url)
-    qry = """update movie set actors = ('{}') where id = ('{}')""".format(actors, cd)
-    try:
-        db.commit()
-        cursor.execute(qry)
-    except Exception:
-        pass
-
+# # movie_db 에 있는 movie 테이블에 actors 필드의 values 넣기
+# for cd in code_list:
+#     url = f"https://movie.naver.com/movie/bi/mi/detail.naver?code={cd}"
+#     actors = get_actors(url)
+#     qry = """update movie set actors = ('{}') where id = ('{}')""".format(actors, cd)
+#     try:
+#         db.commit()
+#         cursor.execute(qry)
+#     except Exception:
+#         pass
 
 db.close()
 
