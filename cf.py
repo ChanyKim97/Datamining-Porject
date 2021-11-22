@@ -283,10 +283,5 @@ class CF(Calculate_rating):
         print(f"{user_name}님을 위한 영화")
         return recommendation_file
 
-<<<<<<< HEAD:CF.py
 CF_bkw7 = CF('bkw7', 5)
 print(CF_bkw7.recommendation())
-=======
-CF_bkw7 = CF('bkw7', 3)
-print(CF_bkw7.recommendation())
->>>>>>> cb489157283c9696e9ba8b2177493e036b849dd6:cf.py
