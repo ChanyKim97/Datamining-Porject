@@ -8,21 +8,42 @@ import pickle
 from scipy.sparse import csr_matrix
 
 
-######################## mysql 에서 데이터 불러오기 ##############################
-engine = create_engine(f'mysql+pymysql://root:kch41542672@localhost/movie?charset=utf8')
+##########################################
+# 크롤링한 데이터 mysql 에서 가지고오기
+##########################################
+engine = create_engine(f'mysql+pymysql://root:Password@localhost/movie?charset=utf8')
 connect = engine.connect()
-raw_data_set = pd.read_sql_table('review', connect)
-#print(raw_data)
+raw_data_set = pd.read_sql_table('all_review', connect)
+# print(raw_data_set)
 
 
 
 
-######################## 만약 '괴물'이라는 영화 평이 1개라면 평가가 되나? #########################
+
+##########################################
+# 평점이 1개여서 user a와 유사한 b,c,d중 b만 평가한 영화 z에 대해서 b가 10점을 주면 a에게 무조건 추천을 하게 됨
+# 이를 방지하고자 10번이상 평가된 영화만 넣도록 함
+##########################################
+def Remove_10_under_movie(data):
+    title_num_ = data.groupby('title').count().sort_values('user')
+    # print(title_num_)
+    title_under_10 = title_num_[title_num_.user <= 10]
+    # print(title_under_10)
+    title_under_10_list = list(title_under_10.index)
+    for title in title_under_10_list:
+        data = data[data['title'] != title]
+    return data
+
+raw_data_set = Remove_10_under_movie(raw_data_set)
+# print(raw_data_set)
 
 
 
 
-######################## 디비 아이디는 버리기 (PK) #############################
+
+##########################################
+# 데이터 베이스에 넣기 위해 만든 PK id는 삭제
+##########################################
 data = raw_data_set
 data = data.drop(['id'], axis = 1)
 #print(data)
@@ -30,19 +51,22 @@ data = data.drop(['id'], axis = 1)
 
 
 
-######################## 데이터 파악 부분 ############################
-######################## 중복값 없이 행개수
+
+##########################################
+# 데이터 파악
+##########################################
+# 중복값 없이 행개수
 # all_user = data.user.unique().shape[0]
 # all_movie = data.title.unique().shape[0]
 #print(f'유저 수 {all_user}명, 영화 수 {all_movie}.')
 
-######################## 상위 이용 정리
-# user_top_5 = data.user.value_counts()[:5]
+#  상위 이용 정리
+user_top_5 = data.user.value_counts()[:5]
+print(user_top_5)
 # movie_top_5 = data.title.value_counts()[:5]
-#print(user_top_5)
 #print(movie_top_5)
 
-####################### show
+#show
 # plt.style.use('ggplot')
 # plt.figure(figsize=(10,10))
 # user_top_5.plot(kind='bar', title='user', legend = True, fontsize = 10)
@@ -54,7 +78,10 @@ data = data.drop(['id'], axis = 1)
 
 
 
-######################## Colaborative Filtering
+#########################################
+# Colaborative Filtering
+# data set 행렬로 만들기
+#########################################
 # 라벨링
 def labeling(column_name):
     le = LabelEncoder()
@@ -120,7 +147,9 @@ final_matrix = pd.concat([user_, data_matrix], axis=1)
 
 
 
+#############################################
 # 코사인 우사도 적용
+#############################################
 def cosine_similarity(data):
     similarity = 1 - cosine_distances(data)
     return similarity
@@ -146,6 +175,7 @@ class Find(object):
 
     #알고리즘을 이용한 이웃검색
     def find_near_neigh(self):
+        ################################ cosine similarity ######################################
         user_num_infind = Find.name_to_num(self)
         KNN = NearestNeighbors(n_neighbors=self.neigh_num, metric='cosine')
         KNN.fit(data_matrix)
@@ -192,7 +222,7 @@ class Calculate_rating(Find):
 
         rating_list = []
         #영화 수만큼
-        # print(narray)
+        ###################################### 알고리즘 적용부분 ##################################
         for colnum in range(narray.shape[1]):
             sum_ = 0
             rating = 0
@@ -205,6 +235,7 @@ class Calculate_rating(Find):
                 rating = 0
             else:
                 rating = sum_ / sum_distance
+            # print(sum_, sum_distance,rating)
 
             if rating<0:
                 rating = 0
@@ -254,7 +285,8 @@ class CF(Calculate_rating):
 
         recommend_list_index = []
         for k in range(len(temp_list)):
-            if temp_list[k] >= 6:
+            ################################################예측 평가 점수 부분
+            if temp_list[k] >= 8:
                 recommend_list_index.append(k)
 
         recommend_list_str = []
@@ -283,5 +315,11 @@ class CF(Calculate_rating):
         print(f"{user_name}님을 위한 영화")
         return recommendation_file
 
-CF_bkw7 = CF('bkw7', 5)
-print(CF_bkw7.recommendation())
+
+
+
+#########################
+#추천
+########################
+CF_inos = CF('inos', 4)
+print(CF_inos.recommendation())

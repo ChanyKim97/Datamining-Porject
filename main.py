@@ -71,7 +71,7 @@ def get_userreview_page_all(url):
 
 def do_crawling(url):
     url_list = get_userreview_page_all(url)
-    db = pymysql.connect(host='localhost', user='root', password='kch41542672', database='movie')
+    db = pymysql.connect(host='localhost', user='root', password='Password', database='movie')
     cursor = db.cursor()
 
     #평가 영화 10개 이상인 사람만 check
@@ -102,7 +102,7 @@ def do_crawling(url):
                 score_list.append(score.select('em')[0].contents[0])
 
             for num in range(len(title_list)):
-                query = """insert into review (user, title, genre, score) values ('{}', '{}', '{}', '{}')""".format(name_list[num], title_list[num], genre_list_[num], score_list[num])
+                query = """insert into all_review (user, title, genre, score) values ('{}', '{}', '{}', '{}')""".format(name_list[num], title_list[num], genre_list_[num], score_list[num])
                 try:
                     db.commit()
                     cursor.execute(query)
@@ -116,9 +116,12 @@ def do_crawling(url):
 from concurrent.futures import ThreadPoolExecutor
 
 #11/21 오후 06:55기준
-page = 17810530
+#으로부터 댓글 1000개 가량 받아오기
+#댓글 fix값 17810530 ~ 17809500
+#tuple 총 13999개
 
-while page >17810500:
+page = 17810530
+while page >17809500:
   page=str(page)
   url = f"http://movie.naver.com/movie/point/af/list.naver?st=nickname&sword={page}&target=after"
 
