@@ -11,7 +11,8 @@ from scipy.sparse import csr_matrix
 ##########################################
 # 크롤링한 데이터 mysql 에서 가지고오기
 ##########################################
-engine = create_engine(f'mysql+pymysql://root:Password@localhost/movie?charset=utf8')
+password = ''
+engine = create_engine(f'mysql+pymysql://root:{password}@localhost/movie?charset=utf8')
 connect = engine.connect()
 raw_data_set = pd.read_sql_table('all_review', connect)
 # print(raw_data_set)
@@ -319,7 +320,7 @@ class CF(Calculate_rating):
 
 
 #########################
-#추천
+#추천 근접한 10명
 ########################
-CF_inos = CF('inos', 4)
+CF_inos = CF('inos', 10)
 print(CF_inos.recommendation())
