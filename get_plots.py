@@ -1,30 +1,21 @@
 # 1. DB 에서 가져온 영화 리스트를 set화
-# 2. 영화마다 출연한 배우들 받아옴
+# 2. 영화마다의 줄거리를 받아옴
 
 import pymysql
 from bs4 import BeautifulSoup
 import requests
 import re
 
-def get_actors(url):
-    actors = ''
+# 줄거리 받아오기
+def get_plots(url):
     res = requests.get(url)
     content = res.text
-    soup = BeautifulSoup(content, 'html.parser')
-    info = soup.select_one('dl.info_spec')
+    soup = BeautifulSoup(content, 'lxml')
     try:
-        actors_info = info.select('dd>p>a')
+        return soup.select_one('p.con_tx').get_text()
     except AttributeError as e:
         print(e)
-        return ""
-
-    for i in range(len(actors_info) - 1):
-        nm = actors_info[i].get_text()
-        actors += (nm + ',')
-
-    actors = actors[:-1]
-
-    return actors
+        return None
 
 code_list = []
 
@@ -51,15 +42,16 @@ for i in range(len(result)):
 code_list = set(code_list)
 
 # # movie_db 에 있는 movie 테이블에 actors 필드의 values 넣기
-# for cd in code_list:
-#     url = f"https://movie.naver.com/movie/bi/mi/detail.naver?code={cd}"
-#     actors = get_actors(url)
-#     qry = """update movie set actors = ('{}') where id = ('{}')""".format(actors, cd)
-#     try:
-#         db.commit()
-#         cursor.execute(qry)
-#     except Exception:
-#         pass
+for cd in code_list:
+    url = f"https://movie.naver.com/movie/bi/mi/basic.naver?code={cd}"
+    plots = get_plots(url)
+    print(cd, plots, sep='\n')
+    # qry = """update movie set plot = ('{}') where id = ('{}')""".format(plots, cd)
+    # try:
+    #     db.commit()
+    #     cursor.execute(qry)
+    # except Exception:
+    #     pass
 
 db.close()
 

@@ -7,7 +7,7 @@ try:
     cursor = db.cursor()
 except Exception as p:
     print(p)
-    
+
 qry = "select actors from movie"
 cursor.execute(qry)
 result = cursor.fetchall()
@@ -29,6 +29,7 @@ for actors in actor_list:
             actor_dict[actor] = 1
         else: actor_dict[actor] += 1
 
+print(actor_dict)
 for actor in actor_dict:
     actor_dict[actor] = math.log(cnt/actor_dict[actor]) #IDF
 
