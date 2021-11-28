@@ -79,6 +79,9 @@ for i in range(num_of_prefers):
     qry3 = """select plot from movie where title='{}'""".format(prefers[i])
     cursor.execute(qry3)
     result.append(cursor.fetchall()[0]) # 중복 데이터를 제외
+
+db.close()
+
 prefers_words_list = []
 
     # tuple 형식의 데이터를 str로 변경 및 정규 표현식을 사용하여 문자열 치환
@@ -100,5 +103,3 @@ for word in prefers_words_dict:
 
 for word in tf_idf_dict:
     print(" {} : {}".format(word, tf_idf_dict[word]))
-
-db.close()
