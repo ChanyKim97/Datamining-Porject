@@ -1,10 +1,10 @@
 '''
 영화 줄거리 기반 TF-IDF 계산
 IDEA
-(0) IDF 계산
 (1) 선호하는 영화(들) 선택
 (2) 선호하는 영화 줄거리들의 TF 계산
-(3) 선호하는 영화 줄거리들의 TF-IDF를 계산
+(3) IDF 계산
+(4) 선호하는 영화 줄거리들의 TF-IDF를 계산
 ---------------------------------------------------
 (4) 일정의 점수를 넘는 TF-IDF 값을 가진 단어들을 추려냄
 (5) 그러한 단어들 중 하나라도 포함하는 영화에 +점수 (이러한 단어를 많이 포함하면 포함할 수 록 +점수가 많음)
@@ -18,30 +18,6 @@ try:
     cursor = db.cursor()
 except Exception as p:
     print(p)
-
-# -----------------(0) IDF 계산--------------------
-qry = "select plot from movie"
-cursor.execute(qry)
-result = cursor.fetchall()
-
-words_list = []
-
-# tuple 형식의 데이터를 str로 변경 및 정규 표현식을 사용하여 문자열 치환
-for i in range(len(result)):
-    words_list.append(re.compile('[가-힣]+').findall(str(result[i])))
-
-cnt = 0
-words_dict = dict()
-
-for words in words_list:
-    for word in words:
-        cnt += 1
-        if word not in words_dict:
-            words_dict[word] = 1
-        else: words_dict[word] += 1
-
-for word in words_dict:
-    words_dict[word] = math.log(cnt/words_dict[word]) #IDF
 
 # ----------------------
 # 전체 영화 보여주기
@@ -80,8 +56,6 @@ for i in range(num_of_prefers):
     cursor.execute(qry3)
     result.append(cursor.fetchall()[0]) # 중복 데이터를 제외
 
-db.close()
-
 prefers_words_list = []
 
     # tuple 형식의 데이터를 str로 변경 및 정규 표현식을 사용하여 문자열 치환
@@ -96,7 +70,31 @@ for words in prefers_words_list:
             prefers_words_dict[word] = 1
         else: prefers_words_dict[word] += 1
 
-# -----------------(3) 선호하는 영화 줄거리들의 TF-IDF를 계산--------------------
+# -----------------(3) IDF 계산--------------------
+qry = "select plot from movie"
+cursor.execute(qry)
+result = cursor.fetchall()
+words_list = []
+
+db.close()
+
+# DF : 문서의 수 / 특정 단어가 등장한 문서의 수
+# tuple 형식의 데이터를 str로 변경 및 정규 표현식을 사용하여 문자열 치환
+for i in range(len(result)):
+    words_list.append(re.compile('[가-힣]+').findall(str(result[i])))
+
+# 선호하는 영화 줄거리들에 포함된 단어들의 IDF 계산
+
+num_of_docs = len(words_list)
+words_dict = dict()
+
+for word in prefers_words_dict:
+    cnt = 0
+    for words in words_list:
+        if word in words: cnt += 1
+    words_dict[word] = math.log(num_of_docs/(1 + cnt)) # IDF
+
+# -----------------(4) 선호하는 영화 줄거리들의 TF-IDF를 계산--------------------
 tf_idf_dict = dict()
 for word in prefers_words_dict:
     tf_idf_dict[word] = prefers_words_dict[word] * words_dict[word] # TF * IDF
