@@ -144,6 +144,7 @@ f2 = open('pickling/user_name', 'rb')
 user_ = pickle.load(f2)
 final_matrix = pd.concat([user_, data_matrix], axis=1)
 # print(final_matrix)
+print(final_matrix)
 
 
 

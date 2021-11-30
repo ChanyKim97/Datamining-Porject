@@ -102,8 +102,8 @@ for word in prefers_words_dict:
 
 tf_idf_dict_sorted = sorted(tf_idf_dict.items(), key = lambda item: item[1])
 
-for word in tf_idf_dict_sorted:
-    print(f"{word[0]}: \t {word[1]}")
+#for word in tf_idf_dict_sorted:
+#    print(f"{word[0]}: \t {word[1]}")
 
 #(5) 일정의 점수를 넘는 TF-IDF 값을 가진 단어들을 추려냄
 # 10점을 넘는다는 예시
@@ -133,5 +133,7 @@ for i in range(num_of_prefers):
 recommend_sorted = []
 temp_sorted = sorted(recommend.items(), key=lambda item: item[1], reverse=True)
 for i in temp_sorted:
-    recommend_sorted.append(i[0])
+    #tfidf한 단어가 포함된 것들중에서만 정렬
+    if(i[1]>=1): 
+        recommend_sorted.append(i[0])
 print(recommend_sorted)
