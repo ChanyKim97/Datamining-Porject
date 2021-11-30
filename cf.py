@@ -11,10 +11,10 @@ from scipy.sparse import csr_matrix
 ##########################################
 # 크롤링한 데이터 mysql 에서 가지고오기
 ##########################################
-password = ''
+password = 'kch41542672'
 engine = create_engine(f'mysql+pymysql://root:{password}@localhost/movie?charset=utf8')
 connect = engine.connect()
-raw_data_set = pd.read_sql_table('all_review', connect)
+raw_data_set = pd.read_sql_table('temp_', connect)
 # print(raw_data_set)
 
 
@@ -28,7 +28,7 @@ raw_data_set = pd.read_sql_table('all_review', connect)
 def Remove_10_under_movie(data):
     title_num_ = data.groupby('title').count().sort_values('user')
     # print(title_num_)
-    title_under_10 = title_num_[title_num_.user <= 10]
+    title_under_10 = title_num_[title_num_.user <= 1]
     # print(title_under_10)
     title_under_10_list = list(title_under_10.index)
     for title in title_under_10_list:
@@ -62,8 +62,8 @@ data = data.drop(['id'], axis = 1)
 #print(f'유저 수 {all_user}명, 영화 수 {all_movie}.')
 
 #  상위 이용 정리
-user_top_5 = data.user.value_counts()[:5]
-print(user_top_5)
+#user_top_5 = data.user.value_counts()[:5]
+#print(user_top_5)
 # movie_top_5 = data.title.value_counts()[:5]
 #print(movie_top_5)
 
@@ -322,5 +322,5 @@ class CF(Calculate_rating):
 #########################
 #추천 근접한 10명
 ########################
-CF_inos = CF('inos', 10)
-print(CF_inos.recommendation())
+#CF_inos = CF('chun', 3)
+#print(CF_inos.recommendation())
