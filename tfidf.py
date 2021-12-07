@@ -4,14 +4,14 @@ import re
 import cf
 
 try:
-    db = pymysql.connect(host='localhost', user='root', password='kch41542672', database='movie')
+    db = pymysql.connect(host='localhost', user='root', password='', database='movie')
     cursor = db.cursor()
 except Exception as p:
     print(p)
 
 # ----------------------
 # 전체 영화 보여주기
-qry2 = "select title from temp_"
+qry2 = "select title from movie"
 cursor.execute(qry2)
 result = cursor.fetchall()
 # print(result)
@@ -29,10 +29,12 @@ movie_list.extend(list(set(tmp_list))) # 중복 데이터 제거, 집합은 idx 
 
 
 ################################## CF한 영화들
-CF_user = cf.CF('chun', 3)
+CF_user = cf.CF('mks1', 10)
 
 prefers = CF_user.recommendation()
 num_of_prefers = len(prefers)
+print('=================================================================================================================================================')
+print(prefers)
 ##################################
 
 # -----------------(1) 선호하는 영화(들) 선택--------------------
@@ -53,7 +55,7 @@ num_of_prefers = len(prefers)
 #for num in choices: prefers.append(movie_list[num])
 result_ = []
 for i in range(num_of_prefers):
-    qry3 = """select plot from temp_ where title='{}'""".format(prefers[i])
+    qry3 = """select plot from movie where title='{}'""".format(prefers[i])
     cursor.execute(qry3)
     result_.append(cursor.fetchall()[0]) # 중복 데이터를 제외
 
@@ -72,7 +74,7 @@ for words in prefers_words_list:
         else: prefers_words_dict[word] += 1
 
 # -----------------(3) IDF 계산--------------------
-qry = "select plot from temp_"
+qry = "select plot from movie"
 cursor.execute(qry)
 result = cursor.fetchall()
 words_list = []
@@ -102,8 +104,9 @@ for word in prefers_words_dict:
 
 tf_idf_dict_sorted = sorted(tf_idf_dict.items(), key = lambda item: item[1])
 
-#for word in tf_idf_dict_sorted:
-#    print(f"{word[0]}: \t {word[1]}")
+print('=================================================================================================================================================')
+for word in tf_idf_dict_sorted:
+    print(f"{word[0]}: \t {word[1]}")
 
 #(5) 일정의 점수를 넘는 TF-IDF 값을 가진 단어들을 추려냄
 # 10점을 넘는다는 예시
@@ -111,7 +114,7 @@ over_10_tfidf = []
 for word in tf_idf_dict_sorted:
     if word[1] > 10:
         over_10_tfidf.append(word[0])
-print(over_10_tfidf)
+#print(over_10_tfidf)
 
 #(5) 그러한 단어들 중 하나라도 포함하는 영화에 +점수 (이러한 단어를 많이 포함하면 포함할 수 록 +점수가 많음)
 count_word_in_plot = []
@@ -123,8 +126,9 @@ for plot_ in result_:
     count_word_in_plot.append(cnt)
     cnt = 0
 
-print(count_word_in_plot)
-print(prefers)
+print('=================================================================================================================================================')
+for i in range(num_of_prefers):
+    print(prefers[i],count_word_in_plot[i])
 
 recommend = dict()
 for i in range(num_of_prefers):
@@ -136,4 +140,6 @@ for i in temp_sorted:
     #tfidf한 단어가 포함된 것들중에서만 정렬
     if(i[1]>=1): 
         recommend_sorted.append(i[0])
+
+print('=================================================================================================================================================')
 print(recommend_sorted)

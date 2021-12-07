@@ -24,25 +24,6 @@ def get_userreview_moive_link(url):
     return Review_movie_links_list
 
 
-#위 함수로 부터 받은 영화 리스트의 장르를 가져오기
-# def genre_list(url):
-#     Review_movie_links_list = get_userreview_moive_link(url)
-#
-#     genre_list=[]
-#
-#     for url in Review_movie_links_list:
-#         res = requests.get(url)
-#         content = res.text
-#         soup = BeautifulSoup(content, 'html.parser')
-#
-#         #table tag info_area class가진 부분
-#         info = soup.find_all('table', 'info_area')
-#
-#         #첫번째 장르 종류
-#         for G in info:
-#             genre_list.append(G.a.get_text())
-#
-#     return genre_list
 def genre_list_with_code(url):
     Review_movie_links_list = get_userreview_moive_link(url)
     genre_list = []
@@ -95,7 +76,7 @@ def get_userreview_page_all(url):
 
 def do_crawling(url):
     url_list = get_userreview_page_all(url)
-    db = pymysql.connect(host='localhost', user='root', password='kch41542672', database='movie')
+    db = pymysql.connect(host='localhost', user='root', password='password', database='movie')
     cursor = db.cursor()
 
     #평가 영화 10개 이상인 사람만 check
@@ -126,7 +107,7 @@ def do_crawling(url):
                 score_list.append(score.select('em')[0].contents[0])
 
             for num in range(len(title_list)):
-                query = """insert into temp_ (user, title, movie_id, genre, score) values ('{}', '{}', '{}', '{}', '{}')""".format(
+                query = """insert into movie (user, title, movie_id, genre, score) values ('{}', '{}', '{}', '{}', '{}')""".format(
                     name_list[num], title_list[num], movie_code_list_[num], genre_list_[num], score_list[num])
                 try:
                     db.commit()
@@ -143,10 +124,10 @@ from concurrent.futures import ThreadPoolExecutor
 #11/21 오후 06:55기준
 #으로부터 댓글 1000개 가량 받아오기
 #댓글 fix값 17810530 ~ 17809500
-#tuple 총 13999개
+#tuple 총 14380개
 
 page = 17810530
-while page >17810500:
+while page >17809500:
   page=str(page)
   url = f"http://movie.naver.com/movie/point/af/list.naver?st=nickname&sword={page}&target=after"
 

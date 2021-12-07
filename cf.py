@@ -11,10 +11,10 @@ from scipy.sparse import csr_matrix
 ##########################################
 # 크롤링한 데이터 mysql 에서 가지고오기
 ##########################################
-password = 'kch41542672'
+password = ''
 engine = create_engine(f'mysql+pymysql://root:{password}@localhost/movie?charset=utf8')
 connect = engine.connect()
-raw_data_set = pd.read_sql_table('temp_', connect)
+raw_data_set = pd.read_sql_table('movie', connect)
 # print(raw_data_set)
 
 
@@ -23,19 +23,19 @@ raw_data_set = pd.read_sql_table('temp_', connect)
 
 ##########################################
 # 평점이 1개여서 user a와 유사한 b,c,d중 b만 평가한 영화 z에 대해서 b가 10점을 주면 a에게 무조건 추천을 하게 됨
-# 이를 방지하고자 10번이상 평가된 영화만 넣도록 함
+# 이를 방지하고자 5번이상 평가된 영화만 넣도록 함
 ##########################################
-def Remove_10_under_movie(data):
+def Remove_5_under_movie(data):
     title_num_ = data.groupby('title').count().sort_values('user')
     # print(title_num_)
-    title_under_10 = title_num_[title_num_.user <= 1]
+    title_under_5 = title_num_[title_num_.user <= 5]
     # print(title_under_10)
-    title_under_10_list = list(title_under_10.index)
-    for title in title_under_10_list:
+    title_under_5_list = list(title_under_5.index)
+    for title in title_under_5_list:
         data = data[data['title'] != title]
     return data
 
-raw_data_set = Remove_10_under_movie(raw_data_set)
+raw_data_set = Remove_5_under_movie(raw_data_set)
 # print(raw_data_set)
 
 
@@ -62,20 +62,11 @@ data = data.drop(['id'], axis = 1)
 #print(f'유저 수 {all_user}명, 영화 수 {all_movie}.')
 
 #  상위 이용 정리
-#user_top_5 = data.user.value_counts()[:5]
-#print(user_top_5)
+print('=================================================================================================================================================')
+user_top_5 = data.user.value_counts()[:5]
+print(user_top_5)
 # movie_top_5 = data.title.value_counts()[:5]
 #print(movie_top_5)
-
-#show
-# plt.style.use('ggplot')
-# plt.figure(figsize=(10,10))
-# user_top_5.plot(kind='bar', title='user', legend = True, fontsize = 10)
-# plt.xticks(rotation = 0)
-# plt.ylabel('Num of review', fontsize =10)
-# plt.show()
-
-
 
 
 
@@ -143,7 +134,7 @@ data_matrix = temp_matrix
 f2 = open('pickling/user_name', 'rb')
 user_ = pickle.load(f2)
 final_matrix = pd.concat([user_, data_matrix], axis=1)
-# print(final_matrix)
+print('=================================================================================================================================================')
 print(final_matrix)
 
 
@@ -288,7 +279,7 @@ class CF(Calculate_rating):
         recommend_list_index = []
         for k in range(len(temp_list)):
             ################################################예측 평가 점수 부분
-            if temp_list[k] >= 8:
+            if temp_list[k] >= 9.5:
                 recommend_list_index.append(k)
 
         recommend_list_str = []
@@ -314,14 +305,4 @@ class CF(Calculate_rating):
             recommendation_file = by_rating_list
 
         user_name = final_matrix['user_name'][user_number]
-        print(f"{user_name}님을 위한 영화")
         return recommendation_file
-
-
-
-
-#########################
-#추천 근접한 10명
-########################
-#CF_inos = CF('chun', 3)
-#print(CF_inos.recommendation())

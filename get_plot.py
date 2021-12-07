@@ -17,12 +17,12 @@ def get_plots(url):
 code_list = []
 
 try:
-    db = pymysql.connect(host='localhost', user='root', password='kch41542672', database='movie')
+    db = pymysql.connect(host='localhost', user='root', password='password', database='movie')
     cursor = db.cursor()
 except Exception as p:
     print(p)
 
-qry = "select movie_id from temp_"
+qry = "select movie_id from movie"
 cursor.execute(qry)
 result = cursor.fetchall()
 print(result)
@@ -44,7 +44,7 @@ for cd in code_list:
     url = f"https://movie.naver.com/movie/bi/mi/basic.naver?code={cd}"
     plots = get_plots(url)
     print(cd, plots, sep='\n')
-    qry = """update temp_ set plot = ('{}') where movie_id = ('{}')""".format(plots, cd)
+    qry = """update movie set plot = ('{}') where movie_id = ('{}')""".format(plots, cd)
     try:
         db.commit()
         cursor.execute(qry)
