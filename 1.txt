@@ -1,6 +1,0 @@
-id, user, title, genre, score있음
-
-TF-IDF ? 자연어가 아님
-코사인 유사도 예시많음
-
-MSE평가?
