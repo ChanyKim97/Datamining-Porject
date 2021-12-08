@@ -279,7 +279,7 @@ class CF(Calculate_rating):
         recommend_list_index = []
         for k in range(len(temp_list)):
             ################################################예측 평가 점수 부분
-            if temp_list[k] >= 9.5:
+            if temp_list[k] >= 8:
                 recommend_list_index.append(k)
 
         recommend_list_str = []
