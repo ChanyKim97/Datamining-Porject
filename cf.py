@@ -56,10 +56,6 @@ data = data.drop(['id'], axis = 1)
 ##########################################
 # 데이터 파악
 ##########################################
-# 중복값 없이 행개수
-# all_user = data.user.unique().shape[0]
-# all_movie = data.title.unique().shape[0]
-#print(f'유저 수 {all_user}명, 영화 수 {all_movie}.')
 
 #  상위 이용 정리
 print('=================================================================================================================================================')
@@ -147,8 +143,8 @@ def cosine_similarity(data):
     similarity = 1 - cosine_distances(data)
     return similarity
 
-cos_sim = cosine_similarity(data_matrix)
-# print(cos_sim)
+#cos_sim = cosine_similarity(data_matrix)
+#print(cos_sim)
 
 # 유사한 사람 찾기
 # 코사인 유사도 정렬해서 앞에서 가져오는게 날듯 수정 필요
@@ -199,9 +195,8 @@ class Find(object):
         narray = narray[:, 1:]
         return narray
 
-# user_neighbor = Find('bkw7', 5)
-# user_neighbor_narray = user_neighbor.neigh_narray()
-# print(user_neighbor_narray)
+# user_neighbor = Find('mks1', 10)
+# print(user_neighbor.find_near_neigh())
 
 
 class Calculate_rating(Find):
@@ -253,9 +248,9 @@ class Calculate_rating(Find):
             target_user_rating.append(value)
         return target_user_rating
 
-# user_dis = Calculate_rating('bkw7', 5)
-# print(csr_matrix(user_dis.calcul_rating()))
-# print(user_dis.virtual_rating())
+#user_dis = Calculate_rating('mks1', 10)
+#print(csr_matrix(user_dis.calcul_rating()))
+#print(user_dis.calcul_rating())
 
 
 class CF(Calculate_rating):
@@ -304,5 +299,5 @@ class CF(Calculate_rating):
         else:
             recommendation_file = by_rating_list
 
-        user_name = final_matrix['user_name'][user_number]
+        #user_name = final_matrix['user_name'][user_number]
         return recommendation_file

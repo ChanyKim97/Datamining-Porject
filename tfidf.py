@@ -35,6 +35,14 @@ prefers = CF_user.recommendation()
 num_of_prefers = len(prefers)
 print('=================================================================================================================================================')
 print(prefers)
+# cnt = 0
+# while True:
+#     if cnt % 7 == 0:
+#         print()
+#     if cnt == num_of_prefers:
+#         break
+#     print(prefers[cnt], end=", ")
+#     cnt += 1
 ##################################
 
 # -----------------(1) 선호하는 영화(들) 선택--------------------
@@ -104,6 +112,7 @@ for word in prefers_words_dict:
 
 tf_idf_dict_sorted = sorted(tf_idf_dict.items(), key = lambda item: item[1])
 
+print()
 print('=================================================================================================================================================')
 for word in tf_idf_dict_sorted:
     print(f"{word[0]}: \t {word[1]}")
@@ -143,3 +152,11 @@ for i in temp_sorted:
 
 print('=================================================================================================================================================')
 print(recommend_sorted)
+# cnt = 0
+# while True:
+#     if cnt % 7 == 0:
+#         print()
+#     if cnt == len(recommend_sorted):
+#         break
+#     print(recommend_sorted[cnt], end=", ")
+#     cnt += 1
